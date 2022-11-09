@@ -6,6 +6,9 @@ import './navbar.css';
 const Navbar = () => {
   const name = useSelector((state) => state.user.name);
 
+  console.log('Navbar rerendered'); //This is why useSelector is great.
+  // name이 dispatch 되어야 리렌더링 되고, email만 dispatch되면 리렌더링 되지 않는다!
+
   return (
     <div className='navbar'>
       <div className='navbarWrapper'>
