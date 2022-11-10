@@ -3,21 +3,25 @@ import Warning from '../warning/Warning';
 import './update.css';
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { updateUser2 } from '../../redux/userSlice';
 // import { update } from '../../redux/userSlice';
-import { updateUser } from '../../redux/apiCalls';
+// import { updateUser } from '../../redux/apiCalls';
 
 export default function Update() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   // console.log(name, email);
 
-  const user = useSelector((state) => state.user.userInfo);
+  // const user = useSelector((state) => state.user.userInfo);
+  const { userInfo, pending, error } = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
   const handleUpdate = (e) => {
     e.preventDefault();
+
     // dispatch(update({ name, email })); // dispatch(update({ name: name, email: email }));
-    updateUser({ name, email }, dispatch);
+    // updateUser({ name, email }, dispatch);
+    dispatch(updateUser2({ name, email }));
   };
 
   return (
@@ -44,7 +48,7 @@ export default function Update() {
               <input
                 className='formInput'
                 type='text'
-                placeholder={user.name}
+                placeholder={userInfo.name}
                 onChange={(e) => setName(e.target.value)}
               />
             </div>
@@ -53,7 +57,7 @@ export default function Update() {
               <input
                 className='formInput'
                 type='text'
-                placeholder={user.email}
+                placeholder={userInfo.email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
@@ -61,9 +65,17 @@ export default function Update() {
               <label>Password</label>
               <input className='formInput' type='password' />
             </div>
-            <button className='updateButton' onClick={handleUpdate}>
+            <button
+              disabled={pending}
+              className='updateButton'
+              onClick={handleUpdate}
+            >
               Update
             </button>
+            {error && <span className='error'>Somethig went wrong!</span>}
+            {pending === false && error === false && (
+              <span className='success'>Account has been updated.</span>
+            )}
           </form>
         </div>
       </div>
