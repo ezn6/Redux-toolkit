@@ -3,19 +3,21 @@ import Warning from '../warning/Warning';
 import './update.css';
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { update } from '../../redux/userSlice';
+// import { update } from '../../redux/userSlice';
+import { updateUser } from '../../redux/apiCalls';
 
 export default function Update() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   // console.log(name, email);
 
-  const user = useSelector((state) => state.user);
+  const user = useSelector((state) => state.user.userInfo);
   const dispatch = useDispatch();
 
   const handleUpdate = (e) => {
     e.preventDefault();
-    dispatch(update({ name, email })); // dispatch(update({ name: name, email: email }));
+    // dispatch(update({ name, email })); // dispatch(update({ name: name, email: email }));
+    updateUser({ name, email }, dispatch);
   };
 
   return (
