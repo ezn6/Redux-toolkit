@@ -1,5 +1,7 @@
 # Redux toolkit 완전정복
 
+![lama-redux](https://user-images.githubusercontent.com/68230951/201013639-d7e828a9-4bb7-445d-9498-b0c188f889fe.gif)
+
 ### 리덕스를 사용하는 이유
 
 - 리덕스를 사용하지 않는다고 하면 root컴포넌트에서 자식의 자식 컴포넌트에 필요한 props을 넘겨주기 위해 자식 컴포넌트(1대)는 필요하지도 않지만 props을 받아 자신의 자식(2대)으로 넘겨야 한다. 만약 더 복잡하고 규모가 큰 앱이라면 몇단계를 거쳐야될 수도 있다. 단계를 거치면서 불필요한 리렌더링이 될수도 있다. → **하지만 리덕스를 사용하면 props drilling 막을수 있다!**
@@ -88,3 +90,6 @@ import { updateUser2 } from '../../redux/userSlice';
 const dispatch = useDispatch();
 dispatch(updateUser2({ name, email }));
 ```
+
+
+
