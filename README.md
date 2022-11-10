@@ -1,70 +1,90 @@
-# Getting Started with Create React App
+# Redux toolkit 완전정복
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+### 리덕스를 사용하는 이유
 
-## Available Scripts
+- 리덕스를 사용하지 않는다고 하면 root컴포넌트에서 자식의 자식 컴포넌트에 필요한 props을 넘겨주기 위해 자식 컴포넌트(1대)는 필요하지도 않지만 props을 받아 자신의 자식(2대)으로 넘겨야 한다. 만약 더 복잡하고 규모가 큰 앱이라면 몇단계를 거쳐야될 수도 있다. 단계를 거치면서 불필요한 리렌더링이 될수도 있다. → **하지만 리덕스를 사용하면 props drilling 막을수 있다!**
+- createAsyncThunk는 비동기 작업을 처리하는 액션을 만들어준다. createAsyncThunk에서 try-catch 블록을 작성해주지 않아도 자동으로 해준다. (공식문서 : When your payloadCreator returns a rejected promise (such as a thrown error in an async function), the thunk will dispatch a rejected action containing an automatically-serialized version of the error as action.error.)
 
-In the project directory, you can run:
+### Store
 
-### `yarn start`
+- 스토어는 컴포넌트의 상태를 관리하는 저장소다. 하나의 프로젝트는 하나의 스토어만 가질 수 있다.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Action
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- 스토어의 **상태를 변경하기 위해서는, 액션을 생성해야한다. 액션은 객체**이며, 반드시 type을 가져야 한다. 액션 객체는 액션생성함수에 의해서 만들어진다.
 
-### `yarn test`
+### Reducer
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- 리듀서는 **현재 상태와 / 액션 객체를 받아** 새로운 상태를 리턴하는 함수다.
 
-### `yarn build`
+### Dispatch
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- 디스패치는 스토어의 내장 함수 중 하나이며, 액션 객체를 넘겨줘 상태를 업데이트 시켜주는 역할을 한다
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+<br/>
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+<br/>
 
-### `yarn eject`
+```
+//express를 통해 간단한 서버를 만들어 통신하였다
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+app.post('/api/users/:id/update', (req, res) => {
+  setTimeout(() => {
+    res.send(req.body);
+  }, 2000);
+});
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```
+//예시 코드
+//userSlice.js
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+import axios from 'axios';
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+export const updateUser2 = createAsyncThunk('user/update', async (user) => {
+  const res = await axios.post(
+    'http://localhost:8800/api/users/1/update',
+    user
+  );
+  return res.data;
+});
 
-## Learn More
+const userSlice = createSlice({
+  name: 'user',
+  initialState: {
+    userInfo: {
+      name: 'Peter',
+      email: 'Peter@gmail.com',
+    },
+    pending: null,
+    error: null,
+  },
+  extraReducers: {
+    [updateUser2.pending]: (state) => {
+      state.pending = true;
+      state.error = false;
+    },
+    [updateUser2.fulfilled]: (state, action) => {
+      state.pending = false;
+      state.userInfo = action.payload;
+    },
+    [updateUser2.rejected]: (state) => {
+      state.pending = null;
+      state.error = true;
+    },
+  },
+});
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+export default userSlice.reducer;
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```
+//사용할때
 
-### Code Splitting
+import { useDispatch } from 'react-redux';
+import { updateUser2 } from '../../redux/userSlice';
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+const dispatch = useDispatch();
+dispatch(updateUser2({ name, email }));
+```
